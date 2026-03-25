@@ -15,12 +15,12 @@ module Z(
     assign o_z = z_r;
 
     always @(*) begin
-        mult_result_x_w = po7_x * m8_x;
-        mult_result_y_w = po7_y * m8_y;
+        mult_result_x_w = po7_x * (m8_x >> 3);
+        mult_result_y_w = po7_y * (m8_y >> 3);
     end
 
     always @(*) begin
-        z_w = 6 - (mult_result_x_r << 1) - (mult_result_y_r << 1);
+        z_w = {4'd6, 12'd0} - (mult_result_x_r << 1) - (mult_result_y_r << 1);
     end
 
     always @(posedge CLK) begin

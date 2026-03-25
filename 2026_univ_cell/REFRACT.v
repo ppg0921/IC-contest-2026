@@ -119,7 +119,7 @@ module REFRACT(
         final_result_w = final_result_r;
         done_w = done_r;
         addr = 0;
-        SRAM_WE = 1; // default to read
+        SRAM_WE = 0; // default to read
         SRAM_D = 0;
         case (state_r)
             S_GX_PRE_IN: begin
@@ -179,7 +179,7 @@ module REFRACT(
                 state_w = S_NUM_P_Y;
                 addr = {y_r, x_r, 1'b0};
                 SRAM_D = final_result_r;
-                SRAM_WE = 0;
+                SRAM_WE = 1;
             end
             S_NUM_P_Y: begin
                 sub16_a = {y_r, 12'b0};
@@ -201,7 +201,7 @@ module REFRACT(
                 end
                 addr = {y_r, x_r, 1'b1};
                 SRAM_D = final_result_r;
-                SRAM_WE = 0;
+                SRAM_WE = 1;
             end
             S_DONE: begin
                 done_w = 1;
