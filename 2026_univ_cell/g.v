@@ -5,6 +5,7 @@ module g(
     input i_valid,
 
     output o_valid,
+    output [15:0] o_m8,
     output [15:0] g_x_y
 );
     reg signed [15:0] m8_r, m8_w;
@@ -25,7 +26,8 @@ module g(
     localparam S_OUTPUT = 7;
 
     assign o_valid = (state_r == S_OUTPUT);
-    assign g_x_y = mult_result_r[27:12];
+    assign g_x_y = mult_result_r[24:9];
+    assign o_m8 = m8_r;
 
     always @(*) begin
         m8_w = m8_r;

@@ -1,5 +1,8 @@
 ./tb.v
 ./REFRACT.v
-./LUT.sv
-./Adder_10b.sv
-./Substractor_4b.sv
+./g.v
+./Z.v
+./Mult.v
+./Mult_16b.v
+./Substractor_16b.v
+./Ratio.v
