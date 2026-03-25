@@ -87,7 +87,7 @@ reg [8*64-1:0] golden_fname;
 reg [15:0] golden [0:511];
 
 `ifndef RI
-    `define RI 5
+    `define RI 10
 `endif
 
 initial begin

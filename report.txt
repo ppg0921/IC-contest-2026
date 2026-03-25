@@ -1,0 +1,20 @@
+
+FTP account:                       E26163
+
+Level:                             C
+Synthesis area:                    0
+Total cycles:                      30000+30000
+Total mismatch points:             0
+CYCLE:                             50.0
+
+--- RTL category---
+HDL simulator :                    vcs
+RTL filename :                     REFRACT.sv 
+
+--- Pre-layout gate-level ---
+gate-levelfilename:                REFRACT_syn.v  
+gate-level sdf filename:           REFRACT_syn.sdf        
+synthesis database:                REFRACT_syn.sdf        
+
+-----(annotation)--------------------------------------------------------
+ (optional, write down anything that you want raters know)
