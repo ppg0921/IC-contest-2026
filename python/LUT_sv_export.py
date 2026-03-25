@@ -1,14 +1,15 @@
 """
 Generate LUT as a SystemVerilog localparam 3D array.
 Indices: [RI-2 (0..13)][|X-8| (0..8)][|Y-8| (0..8)]
-Values:  non-negative magnitudes (0..443) in 10-bit 2's complement
-         (10 bits needed: max 443 = 0b0110111011, fits in signed 10-bit range 0..511)
+Values: non-negative magnitudes in Q4.8 format
+        stored in 12-bit signed representation
+        (4 integer bits + 8 fractional bits = 12 bits total)
 """
 
 import numpy as np
 
 # ---------------------------------------------------------------------------
-# Core computation (same as before)
+# Core computation
 # ---------------------------------------------------------------------------
 
 def compute_offsets_float(X, Y, RI):
@@ -25,15 +26,15 @@ def compute_offsets_float(X, Y, RI):
     t        = -Z / (-eta + coef)
     return t * coef * gx, t * coef * gy
 
-def q6_floor(val):
-    return int(np.floor(val * 64))
+def q8_floor(val):
+    return int(np.floor(val * 256))
 
 # ---------------------------------------------------------------------------
 # Build LUT from canonical X <= 8 side (ox >= 0)
 # lut[ri_idx][abs_u][abs_v]  ri_idx = RI-2
 # ---------------------------------------------------------------------------
 
-BITS = 10   # 10-bit signed 2's complement: range -512..511, fits 0..443
+BITS = 12   # Q4.8 => 12 bits total
 
 def to_twos_complement(val, bits):
     """Convert integer to bits-wide 2's complement binary string."""
@@ -49,7 +50,7 @@ for RI in range(2, 16):
         for abs_v in range(9):
             Y = 8 - abs_v
             ox, _ = compute_offsets_float(X, Y, RI)
-            raw = q6_floor(ox)
+            raw = q8_floor(ox)
             assert raw >= 0
             lut[(abs_u, abs_v, RI)] = raw
 
@@ -57,7 +58,7 @@ for RI in range(2, 16):
 # Write SystemVerilog localparam
 # ---------------------------------------------------------------------------
 
-outfile = "lut_localparam.txt"
+outfile = "lut_localparam_q4_8.txt"
 
 with open(outfile, "w") as f:
     f.write("// ============================================================\n")
@@ -67,8 +68,8 @@ with open(outfile, "w") as f:
     f.write("//   abs_u  = |X - 8| (0..8)\n")
     f.write("//   abs_v  = |Y - 8| (0..8)\n")
     f.write("//\n")
-    f.write("// Values: non-negative magnitudes in Q4.6 format (units of 1/64)\n")
-    f.write(f"//         {BITS}-bit 2's complement, range 0..443\n")
+    f.write("// Values: non-negative magnitudes in Q4.8 format (units of 1/256)\n")
+    f.write(f"//         {BITS}-bit signed representation\n")
     f.write("//\n")
     f.write("// Reconstruct outputs:\n")
     f.write("//   ox = (X > 8) ? -LUT[RI-2][|X-8|][|Y-8|]\n")
@@ -82,7 +83,7 @@ with open(outfile, "w") as f:
     for ri_idx, RI in enumerate(range(2, 16)):
         comma_ri = "" if ri_idx == 13 else ","
         f.write(f"  // RI = {RI}\n")
-        f.write(f"  '{{\n")
+        f.write("  '{\n")
         for abs_u in range(9):
             comma_u = "" if abs_u == 8 else ","
             vals = []
@@ -98,11 +99,13 @@ with open(outfile, "w") as f:
 
 print(f"Written: {outfile}")
 print(f"  Entries  : {9*9*14} ({14} RIs × 9 abs_u × 9 abs_v)")
-print(f"  Bit width: {BITS}-bit signed 2's complement")
+print(f"  Bit width: {BITS}-bit signed")
 print(f"  Max value: {max(lut.values())}  ({to_twos_complement(max(lut.values()), BITS)}b)")
 print(f"  Min value: {min(lut.values())}  ({to_twos_complement(min(lut.values()), BITS)}b)")
 print()
-print("Preview (first 3 lines of file):")
+
+print("Preview (first 16 lines of file):")
 with open(outfile) as f:
     for i, line in enumerate(f):
-        if i < 16: print(" ", line, end="")
+        if i < 16:
+            print(" ", line, end="")

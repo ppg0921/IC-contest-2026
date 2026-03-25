@@ -17,7 +17,8 @@ module REFRACT(
     reg input_busy_r, input_busy_w;
     reg [8:0] addr; // not real register
 
-    wire [9:0] z_x, z_y, LUT_out;
+    wire [11:0] z_x, z_y;
+    wire [11:0] LUT_out;
     wire valid;
 
     assign SRAM_A = addr;
@@ -66,7 +67,7 @@ module REFRACT(
         // else begin
         //     SRAM_D = {z_y, 6'b0};
         // end
-        SRAM_D = {LUT_out, 6'b0};
+        SRAM_D = {LUT_out, 4'b0};
     end
 
     // LUT module
