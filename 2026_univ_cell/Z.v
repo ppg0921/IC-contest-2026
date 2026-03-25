@@ -12,6 +12,8 @@ module Z(
     reg signed [15:0] mult_result_x_r, mult_result_y_r;
     reg signed [15:0] z_r, z_w;
 
+    assign o_z = z_r;
+
     always @(*) begin
         mult_result_x_w = po7_x * m8_x;
         mult_result_y_w = po7_y * m8_y;

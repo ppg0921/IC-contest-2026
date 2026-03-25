@@ -79,7 +79,7 @@ module REFRACT(
     );
 
     Z u_Z (
-        .CLK(CLK), .RST(RST), .m8_x(m8_x_r), .m8_y(m8_y_r), .po7_x(po7_x_r), .po7_y(po7_y_r),
+        .CLK(CLK), .RST(RST), .m8_x({m8_x_r[3:0], 12'b0}), .m8_y({m8_y_r[3:0], 12'b0}), .po7_x(po7_x_r), .po7_y(po7_y_r),
         .o_z(Z_output)
     );
 
@@ -191,6 +191,7 @@ module REFRACT(
                 if (x_r == 15 && y_r == 15) begin
                     state_w = S_DONE;
                 end else begin
+                    state_w = S_GX_PRE_IN;
                     if (x_r == 15) begin
                         x_w = 0;
                         y_w = y_r + 1;
